@@ -13,7 +13,7 @@ class ShopifyConfigViewSet(viewsets.ModelViewSet):
     serializer_class = ShopifyConfigSerializer
 
     @action(detail=False, methods=['get'])
-    def active_config(self, request):
+    def active_config(self, _):
         config = ShopifyConfig.get_active_config()
         if not config:
             return Response({'error': 'No active Shopify configuration found.'}, status=status.HTTP_404_NOT_FOUND)
@@ -43,7 +43,12 @@ class ShopifyConfigViewSet(viewsets.ModelViewSet):
             response_serializer = ConnectivityTestResponseSerializer(data={'success': success, 'message': message})
             if response_serializer.is_valid():
                 return Response(response_serializer.data)
-            return Response(response_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR) # Should not happen
+            return Response(response_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    @action(detail=False, methods=['post'], url_path='receive_cart')
+    def receive_cart(self, request):
+        print('Datos recibidos del frontend:', request.data)
+        return Response({'received': True, 'data': request.data}, status=status.HTTP_200_OK)
 
 def test_connectivity_page(request):
     active_config = ShopifyConfig.get_active_config()
