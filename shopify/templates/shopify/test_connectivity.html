@@ -80,12 +80,15 @@
             const results = document.getElementById('results');
             results.textContent = 'Testing...';
             const csrftoken = getCookie('csrftoken');
-            const response = await fetch(`/shopify/api/config/${configId}/test_specific_config/`, {
+            const response = await fetch(`/shopify/api/config/test_connectivity/`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': csrftoken,
                 },
+                body: JSON.stringify({
+                    config_id: configId
+                })
             });
             const data = await response.json();
             results.textContent = JSON.stringify(data, null, 2);

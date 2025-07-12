@@ -1,6 +1,6 @@
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from .views import ShopifyConfigViewSet, test_connectivity_page
+from .views import ShopifyConfigViewSet, test_connectivity_page, ShopifyConfig
 
 router = DefaultRouter()
 router.register(r'config', ShopifyConfigViewSet, basename='shopify-config')

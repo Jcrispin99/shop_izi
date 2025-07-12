@@ -22,8 +22,12 @@ class ShopifyConfigViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['post'])
     def test_connectivity(self, request):
+        """
+        Tests connectivity for a given config_id from the request body,
+        or the active configuration if no ID is provided.
+        """
         serializer = ConnectivityTestSerializer(data=request.data)
-        if serializer.is_valid():
+        if serializer.is_valid(raise_exception=True):
             config_id = serializer.validated_data.get('config_id')
             if config_id:
                 try:
@@ -39,22 +43,8 @@ class ShopifyConfigViewSet(viewsets.ModelViewSet):
             response_serializer = ConnectivityTestResponseSerializer(data={'success': success, 'message': message})
             if response_serializer.is_valid():
                 return Response(response_serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    @action(detail=True, methods=['post'])
-    def test_specific_config(self, request, pk=None):
-        try:
-            config = self.get_object()
-            success, message = config.test_connection()
-            response_serializer = ConnectivityTestResponseSerializer(data={'success': success, 'message': message})
-            if response_serializer.is_valid():
-                return Response(response_serializer.data)
-        except ShopifyConfig.DoesNotExist:
-            return Response({'error': 'Configuration not found.'}, status=status.HTTP_404_NOT_FOUND)
-        return Response(response_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(response_serializer.errors, status=status.HTTP_500_INTERNAL_SERVER_ERROR) # Should not happen
 
 def test_connectivity_page(request):
     active_config = ShopifyConfig.get_active_config()
     return render(request, 'shopify/test_connectivity.html', {'config': active_config})
-
-
