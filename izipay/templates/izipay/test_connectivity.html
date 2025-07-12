@@ -31,10 +31,12 @@
                 const resultDiv = document.getElementById('result');
                 resultDiv.innerHTML = '<p>Probando conectividad...</p>';
                 
-                fetch('/izipay/test-connectivity/', {
+                fetch('/izipay/api/config/test_connectivity/', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
+                        'Authorization': 'Bearer TU_TOKEN_SESSION', // Reemplazar con el token real
+                        'X-RSA-Key': 'KEY_RSA' // Reemplazar con la llave RSA real
                     }
                 })
                 .then(response => response.json())
